@@ -1,6 +1,7 @@
 const Blog = require('../models/blog')
 const Comment = require('../models/comment')
 
+
 async function handleCreateBlogPost(req, res) {
     const { title, body } = req.body
     const blog = await Blog.create({
