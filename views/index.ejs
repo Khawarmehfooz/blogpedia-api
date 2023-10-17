@@ -1,23 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include('./partials/header') %>
-    <title>Home</title>
+    <%- include('./partials/header.ejs')%>
+    <title>Home | Blogify</title>
   </head>
   <body>
-    <%-include('./partials/navbar') %>
-    <main class="container mt-4 d-flex justify-content-between flex-wrap">
-      <%blogs.forEach(blog=>{%>
-      <div class="card" style="width: 18rem">
-        <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="" />
-        <div class="card-body">
-          <h5 class="card-title"><%= blog.title%></h5>
-          <a href="/blog/<%= blog._id%>" class="btn btn-primary"
-            >Continue Reading</a
-          >
-        </div>
-      </div>
-      <%})%>
-    </main>
+    <h1 class="text-3xl font-bold underline">Hello world!</h1>
   </body>
 </html>
