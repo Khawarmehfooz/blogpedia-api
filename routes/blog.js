@@ -19,7 +19,7 @@ const upload = multer({ storage: storage })
 router.post('/', upload.single('coverImage'), handleCreateBlogPost)
 router.get('/', handleGetAllPosts)
 router.get('/:id', handleGetPostById)
-router.put('/:id', handleUpdatePost)
+router.put('/:id', upload.single('coverImage'), handleUpdatePost)
 router.delete('/:id', handleDeleteBlogPost)
 
 module.exports = router

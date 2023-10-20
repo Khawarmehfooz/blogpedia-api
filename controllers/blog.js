@@ -36,12 +36,22 @@ async function handleGetPostById(req, res) {
 
 async function handleUpdatePost(req, res) {
     try {
-
         const id = req.params.id
+        const postToUpdate = await Blog.findOne({ _id: id })
+        if (!postToUpdate) {
+            res.status(404).json({ error: "Blog Post Not Found" })
+        }
         const { title, body } = req.body
+        let coverImageURL;
+        if (req.file) {
+            coverImageURL = `/uploads/${req.file.filename}`
+        } else {
+            coverImageURL = postToUpdate.coverImageURL
+        }
         await Blog.findByIdAndUpdate(id, {
             title,
-            body
+            body,
+            coverImageURL
         })
         res.send('Post Updated')
     } catch (err) {
