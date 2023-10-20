@@ -2,14 +2,22 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const path = require('path')
-
-app.use(express.static(path.resolve('dist')))
-app.set('views', path.resolve('./views'))
-app.set('view engine', 'ejs')
 const PORT = process.env.PORT || 8000
+const MONGO_URI = process.env.MONGO_URI
+
+app.use(express.json())
+
+// connecting to database
+const connectToDB = require('./dbConnection')
+connectToDB(MONGO_URI)
+
+//Routes 
+const blogRoute = require('./routes/blog')
+
+app.use('/api/posts', blogRoute)
 
 app.get('/', (req, res) => {
-    res.render('index')
+    res.send('Home Page')
 })
 
 app.listen(PORT, () => {
