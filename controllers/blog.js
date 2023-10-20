@@ -1,11 +1,12 @@
 const Blog = require('../models/blog')
+
 async function handleCreateBlogPost(req, res) {
     try {
         const { title, body } = req.body
         const blog = await Blog.create({
             title,
             body,
-            coverImageURL: '/uploads/blog.png'
+            coverImageURL: `/uploads/${req.file.filename}`
         })
         res.send('Post Created')
     } catch (err) {
