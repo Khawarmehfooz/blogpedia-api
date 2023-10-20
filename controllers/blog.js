@@ -17,9 +17,18 @@ async function handleGetPostById(req, res) {
     const blogPost = await Blog.findById(id)
     res.json(blogPost)
 }
-
+async function handleUpdatePost(req, res) {
+    const id = req.params.id
+    const { title, body } = req.body
+    await Blog.findByIdAndUpdate(id, {
+        title,
+        body
+    })
+    res.send('Post Updated')
+}
 module.exports = {
     handleCreateBlogPost,
     handleGetAllPosts,
-    handleGetPostById
+    handleGetPostById,
+    handleUpdatePost
 }
