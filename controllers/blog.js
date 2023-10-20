@@ -26,9 +26,15 @@ async function handleUpdatePost(req, res) {
     })
     res.send('Post Updated')
 }
+async function handleDeleteBlogPost(req, res) {
+    const id = req.params.id
+    await Blog.findByIdAndDelete(id)
+    res.send('Post Deleted')
+}
 module.exports = {
     handleCreateBlogPost,
     handleGetAllPosts,
     handleGetPostById,
-    handleUpdatePost
+    handleUpdatePost,
+    handleDeleteBlogPost
 }
