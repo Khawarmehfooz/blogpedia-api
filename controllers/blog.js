@@ -8,7 +8,12 @@ async function handleCreateBlogPost(req, res) {
     })
     res.send('Post Created')
 }
+async function handleGetAllPosts(req, res) {
+    const allPosts = await Blog.find({})
+    res.json(allPosts)
+}
 
 module.exports = {
     handleCreateBlogPost,
+    handleGetAllPosts
 }
