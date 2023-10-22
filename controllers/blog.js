@@ -6,7 +6,7 @@ async function handleCreateBlogPost(req, res) {
         const blog = await Blog.create({
             title,
             body,
-            coverImageURL: `/uploads/${req.file.filename}`
+            coverImageURL: `/uploads/blogThumbnails/${req.file.filename}`
         })
         res.send('Post Created')
     } catch (err) {
