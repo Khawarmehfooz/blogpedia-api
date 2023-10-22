@@ -44,7 +44,7 @@ async function handleUpdatePost(req, res) {
         const { title, body } = req.body
         let coverImageURL;
         if (req.file) {
-            coverImageURL = `/uploads/${req.file.filename}`
+            coverImageURL = `/uploads/blogThumbnails/${req.file.filename}`
         } else {
             coverImageURL = postToUpdate.coverImageURL
         }

@@ -5,8 +5,8 @@ const path = require('path')
 const PORT = process.env.PORT || 8000
 const MONGO_URI = process.env.MONGO_URI
 
-app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
 // connecting to database	
 const connectToDB = require('./dbConnection')

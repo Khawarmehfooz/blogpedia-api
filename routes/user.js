@@ -14,9 +14,11 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage: storage })
 
-const { handleUserSignUp, handleUserSignIn, handleGetUserById } = require('../controllers/user')
+const { handleUserSignUp, handleUserSignIn, handleGetUserById, handleUserUpdate, handleUserDeletion } = require('../controllers/user')
 router.post('/signup', upload.single('profileImage'), handleUserSignUp)
 router.post('/signin', handleUserSignIn)
 router.get('/:id', handleGetUserById)
+router.put('/:id', upload.single('profileImage'), handleUserUpdate)
+router.delete('/:id', handleUserDeletion)
 
 module.exports = router
