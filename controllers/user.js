@@ -26,7 +26,17 @@ async function handleUserSignIn(req, res) {
         console.log(err)
     }
 }
+async function handleGetUserById(req, res) {
+    try {
+        const id = req.params.id
+        const user = await User.findById(id)
+        res.json(user)
+    } catch (err) {
+        console.log(err)
+    }
+}
 module.exports = {
     handleUserSignUp,
-    handleUserSignIn
+    handleUserSignIn,
+    handleGetUserById
 }
