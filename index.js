@@ -19,9 +19,11 @@ connectToDB(MONGO_URI)
 //Routes 	
 const blogRoute = require('./routes/blog')
 const userRoute = require('./routes/user')
+const commentRoute = require('./routes/comment')
 
 app.use('/api/posts', blogRoute)
 app.use('/api/users', userRoute)
+app.use('/api/comment', commentRoute)
 
 app.get('/', (req, res) => {
     res.send('Home Page')
