@@ -6,16 +6,19 @@ const blogSchema = new Schema({
     },
     body: {
         type: String,
-        required: true,
+        required: true
     },
     coverImageURL: {
         type: String,
         required: false
-    },
+    }
+    ,
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'user'
     }
 }, { timestamps: true })
-const Blog = model('blog', blogSchema);
+
+const Blog = model('blog', blogSchema)
 module.exports = Blog
+

@@ -1,38 +1,83 @@
 const Blog = require('../models/blog')
 const Comment = require('../models/comment')
 
-
 async function handleCreateBlogPost(req, res) {
-    const { title, body } = req.body
-    const blog = await Blog.create({
-        title,
-        body,
-        createdBy: req.user._id,
-        coverImageURL: `/uploads/${req.file.filename}`
-    })
-    res.redirect(`/`)
+    try {
+        const { title, body } = req.body
+        console.log(req.user)
+        const blog = await Blog.create({
+            title,
+            body,
+            coverImageURL: `/uploads/blogThumbnails/${req.file.filename}`,
+            createdBy: req.user?._id
+        })
+        res.send('Post Created')
+    } catch (err) {
+        console.log(err)
+        res.status(400).send('Server Error')
+    }
 }
-async function getBlogPostAndCommentsById(req, res) {
-    const id = req.params.id;
-    const blog = await Blog.findById(id).populate('createdBy')
-    const comments = await Comment.find({ blogId: id }).populate('createdBy')
-    res.render('viewBlog', {
-        user: req.user,
-        blog,
-        comments
-    })
+
+async function handleGetAllPosts(req, res) {
+    try {
+        const allPosts = await Blog.find({})
+        res.json(allPosts)
+    } catch (err) {
+        console.log(err)
+        res.status(400).send('Server Error')
+    }
 }
-async function handlePostComment(req, res) {
-    await Comment.create({
-        content: req.body.content,
-        blogId: req.params.blogId,
-        createdBy: req.user._id
-    })
-    return res.redirect(`/blog/${req.params.blogId}`)
+async function handleGetPostById(req, res) {
+    try {
+        const id = req.params.id
+        const blogPost = await Blog.findById(id)
+        const blogComments = await Comment.find({ blogId: id }).populate('createdBy')
+        res.json({ "blogPost": blogPost, "comments": blogComments })
+    } catch (err) {
+        res.status(400).send('Server Error')
+    }
 }
+
+async function handleUpdatePost(req, res) {
+    try {
+        const id = req.params.id
+        const postToUpdate = await Blog.findOne({ _id: id })
+        if (!postToUpdate) {
+            res.status(404).json({ error: "Blog Post Not Found" })
+        }
+        const { title, body } = req.body
+        let coverImageURL;
+        if (req.file) {
+            coverImageURL = `/uploads/blogThumbnails/${req.file.filename}`
+        } else {
+            coverImageURL = postToUpdate.coverImageURL
+        }
+        await Blog.findByIdAndUpdate(id, {
+            title,
+            body,
+            coverImageURL
+        })
+        res.send('Post Updated')
+    } catch (err) {
+        console.log(err)
+        res.status(500).json('Server Error')
+    }
+}
+
+async function handleDeleteBlogPost(req, res) {
+    try {
+        const id = req.params.id
+        await Blog.findByIdAndDelete(id)
+        res.send('Post Deleted')
+    } catch (err) {
+        res.status(400).json(`Error: ${err}`)
+    }
+}
+
 module.exports = {
     handleCreateBlogPost,
-    getBlogPostAndCommentsById,
-    handlePostComment
-
+    handleGetAllPosts,
+    handleGetPostById,
+    handleUpdatePost,
+    handleDeleteBlogPost
 }

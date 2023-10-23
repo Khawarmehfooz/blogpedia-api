@@ -4,9 +4,7 @@ function createTokenForUser(user) {
     const payLoad = {
         _id: user._id,
         fullName: user.fullName,
-        email: user.email,
-        profileImageURL: user.profileImageURL,
-        role: user.role
+        email: user.email
     }
     const token = jwt.sign(payLoad, SECRET_TOKEN)
     return token

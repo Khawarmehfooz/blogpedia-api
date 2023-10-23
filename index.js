@@ -1,40 +1,33 @@
 require('dotenv').config()
 const express = require('express')
-const mongoose = require('mongoose')
+const app = express()
 const path = require('path')
 const cookieParser = require('cookie-parser')
 const { checkForAuthCookie } = require('./middlewares/auth')
-const app = express()
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 8000
 const MONGO_URI = process.env.MONGO_URI
-const Blog = require('./models/blog')
-// connect mongodb
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true }).then((e) => {
-    console.log("MongoDB Connected")
-})
 
-const userRoute = require('./routes/user')
-const blogRoute = require('./routes/blog')
-
-app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
 app.use(cookieParser())
-app.use(express.static(path.resolve('./public')))
+app.use(express.urlencoded({ extended: false }))
 app.use(checkForAuthCookie('token'))
 
-app.set('view engine', 'ejs')
-app.set('views', path.resolve('./views'))
+// connecting to database	
+const connectToDB = require('./dbConnection')
+connectToDB(MONGO_URI)
 
-//Routes
-app.get('/', async (req, res) => {
-    const allBlogs = await Blog.find({})
-    res.render('index', {
-        user: req.user,
-        blogs: allBlogs
-    })
+//Routes 	
+const blogRoute = require('./routes/blog')
+const userRoute = require('./routes/user')
+const commentRoute = require('./routes/comment')
+
+app.use('/api/posts', blogRoute)
+app.use('/api/users', userRoute)
+app.use('/api/comment', commentRoute)
+
+app.get('/', (req, res) => {
+    res.send('Home Page')
 })
-app.use('/user', userRoute)
-app.use('/blog', blogRoute)
-
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`)

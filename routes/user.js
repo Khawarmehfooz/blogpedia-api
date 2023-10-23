@@ -1,21 +1,24 @@
 const { Router } = require('express')
-const User = require('../models/user')
 const router = Router()
-const { handleSignIn, handleSignUp } = require('../controllers/user')
+const path = require('path')
+const multer = require('multer')
 
-router.get('/signin', (req, res) => {
-    return res.render('signin')
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.resolve(`./public/uploads/userProfileImages`))
+    },
+    filename: function (req, file, cb) {
+        const fileName = `${Date.now()}-${file.originalname}`
+        cb(null, fileName)
+    }
 })
+const upload = multer({ storage: storage })
 
-router.get('/signup', (req, res) => {
-    return res.render('signup')
-})
+const { handleUserSignUp, handleUserSignIn, handleGetUserById, handleUserUpdate, handleUserDeletion } = require('../controllers/user')
+router.post('/signup', upload.single('profileImage'), handleUserSignUp)
+router.post('/signin', handleUserSignIn)
+router.get('/:id', handleGetUserById)
+router.put('/:id', upload.single('profileImage'), handleUserUpdate)
+router.delete('/:id', handleUserDeletion)
 
-router.post('/signin', handleSignIn)
-
-router.post('/signup', handleSignUp)
-
-router.get('/logout', (req, res) => {
-    res.clearCookie('token').redirect('/')
-})
-module.exports = router;
+module.exports = router

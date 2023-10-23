@@ -1,5 +1,5 @@
-const { createHmac, randomBytes } = require('crypto')
 const { Schema, model } = require('mongoose')
+const bcrypt = require('bcrypt')
 const { createTokenForUser, validateToken } = require('../services/auth')
 const userSchema = new Schema({
     fullName: {
@@ -10,44 +10,50 @@ const userSchema = new Schema({
         type: String,
         required: true,
         unique: true
-    },
-    salt: {
-        type: String
-    },
-    password: {
+    }, password: {
         type: String,
         required: true
     }, profileImageURL: {
         type: String,
-        default: '/images/profile-image.jpg'
-    },
-    role: {
-        type: String,
-        enum: ['USER', 'ADMIN'],
-        default: "USER"
+        required: false
     }
 }, { timestamps: true })
+
 userSchema.pre('save', function (next) {
     const user = this
-    if (!user.isModified('password')) return
-    const salt = randomBytes(16).toString()
-    const hashedPassword = createHmac('sha256', salt).update(user.password).digest('hex')
-    this.salt = salt;
-    this.password = hashedPassword;
-    next();
+    if (this.isModified('password') || this.isNew) {
+        bcrypt.genSalt(10, function (saltError, salt) {
+            if (saltError) {
+                return next(saltError)
+            } else {
+                bcrypt.hash(user.password, salt, function (hashError, hash) {
+                    if (hashError) return next(hashError)
+                    user.password = hash
+                    next()
+                })
+            }
+        })
+    } else {
+        return next()
+    }
 })
-
 userSchema.static('matchPasswordAndGenerateToken', async function (email, password) {
     const user = await this.findOne({ email })
-    if (!user) throw new Error('User not found')
-    const salt = user.salt;
-    const hashedPassword = user.password;
-    const userProvidedHash = createHmac('sha256', salt).update(password).digest('hex')
-    if (hashedPassword !== userProvidedHash) {
-        throw new Error('Incorrect Password')
-    }
-    const token = createTokenForUser(user)
-    return token
+    if (!user) throw new Error('User Not Found')
+    const hashedPassword = user.password
+    const userProvidedPassword = password
+    bcrypt.compare(userProvidedPassword, hashedPassword, function (err, isMatch) {
+        if (err) {
+            throw err
+        } else if (!isMatch) {
+            console.log("Password doesn't match")
+        } else {
+            console.log("password match")
+            const token = createTokenForUser(user)
+            console.log(token)
+            return token
+        }
+    })
 })
 const User = model('user', userSchema)
 module.exports = User

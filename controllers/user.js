@@ -1,26 +1,78 @@
 const User = require('../models/user')
-async function handleSignIn(req, res) {
+async function handleUserSignUp(req, res) {
+    try {
+        const { fullName, email, password } = req.body
+        console.log(req.body)
+        const user = await User.create({
+            fullName,
+            email,
+            password,
+            profileImageURL: `/uploads/userProfileImages/${req.file.filename}`
+        })
+        return res.json(user)
+    } catch (err) {
+        console.log(err)
+    }
+}
+async function handleUserSignIn(req, res) {
     try {
         const { email, password } = req.body
         const token = await User.matchPasswordAndGenerateToken(email, password)
-
-        return res.cookie('token', token).redirect('/')
+        return res.cookie('token', token).json({'message': "Sign In"})
     } catch (err) {
-        return res.render('signin', {
-            error: "Incorrect Email or Password"
-        })
+        console.log(err)
     }
 }
-async function handleSignUp(req, res) {
-    const { fullName, email, password } = req.body
-    await User.create({
-        fullName,
-        email,
-        password
-    })
-    return res.redirect('/')
+async function handleGetUserById(req, res) {
+    try {
+        const id = req.params.id
+        const user = await User.findById(id)
+        res.json(user)
+    } catch (err) {
+        console.log(err)
+    }
+}
+async function handleUserUpdate(req, res) {
+    try {
+        const id = req.params.id
+        const userToUpdate = await User.findOne({ _id: id })
+        if (!userToUpdate) {
+            return res.send('No User Found')
+        }
+        const { fullName, email } = req.body
+        let profileImageURL;
+        if (req.file) {
+            profileImageURL = `/uploads/userProfileImages/${req.file.filename}`
+        } else {
+            profileImageURL = userToUpdate.profileImageURL
+        }
+        await User.findByIdAndUpdate(id, {
+            fullName,
+            email,
+            profileImageURL
+        })
+        res.send('User Updated')
+    } catch (err) {
+        console.log(err)
+    }
+}
+async function handleUserDeletion(req, res) {
+    try {
+        const id = req.params.id
+        const userToDelete = await User.findById(id)
+        if (!userToDelete) {
+            return res.status(404).send("No User Found")
+        }
+        await User.findByIdAndDelete(id)
+        res.send('User Deleted')
+    } catch (err) {
+        console.log(err)
+    }
 }
 module.exports = {
-    handleSignIn,
-    handleSignUp
+    handleUserSignUp,
+    handleUserSignIn,
+    handleGetUserById,
+    handleUserUpdate,
+    handleUserDeletion
 }
