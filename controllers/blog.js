@@ -3,10 +3,12 @@ const Blog = require('../models/blog')
 async function handleCreateBlogPost(req, res) {
     try {
         const { title, body } = req.body
+        console.log(req.user)
         const blog = await Blog.create({
             title,
             body,
-            coverImageURL: `/uploads/blogThumbnails/${req.file.filename}`
+            coverImageURL: `/uploads/blogThumbnails/${req.file.filename}`,
+            createdBy: req.user?._id
         })
         res.send('Post Created')
     } catch (err) {

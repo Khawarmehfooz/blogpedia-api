@@ -2,11 +2,15 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const path = require('path')
+const cookieParser = require('cookie-parser')
+const { checkForAuthCookie } = require('./middlewares/auth')
 const PORT = process.env.PORT || 8000
 const MONGO_URI = process.env.MONGO_URI
 
 app.use(express.json())
+app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
+app.use(checkForAuthCookie('token'))
 
 // connecting to database	
 const connectToDB = require('./dbConnection')

@@ -17,11 +17,8 @@ async function handleUserSignUp(req, res) {
 async function handleUserSignIn(req, res) {
     try {
         const { email, password } = req.body
-        const user = await User.findOne({ email })
-        if (user.password !== password) {
-            return res.send('Invalid Email or password')
-        }
-        res.json(user)
+        const token = await User.matchPasswordAndGenerateToken(email, password)
+        return res.cookie('token', token).json({'message': "Sign In"})
     } catch (err) {
         console.log(err)
     }

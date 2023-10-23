@@ -12,11 +12,11 @@ const blogSchema = new Schema({
         type: String,
         required: false
     }
-    // ,
-    // createdBy: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'user'
-    // }
+    ,
+    createdBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'user'
+    }
 }, { timestamps: true })
 
 const Blog = model('blog', blogSchema)
