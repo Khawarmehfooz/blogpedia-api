@@ -1,9 +1,10 @@
 const { Router } = require('express')
 const router = Router()
 
-const { handlePostComment } = require('../controllers/comment')
+const { handlePostComment, handleGetCommentById } = require('../controllers/comment')
 
 router.post('/:blogId', handlePostComment)
+router.get('/:id', handleGetCommentById)
 
 
 module.exports = router

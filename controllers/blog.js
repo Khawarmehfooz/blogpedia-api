@@ -1,4 +1,5 @@
 const Blog = require('../models/blog')
+const Comment = require('../models/comment')
 
 async function handleCreateBlogPost(req, res) {
     try {
@@ -30,7 +31,8 @@ async function handleGetPostById(req, res) {
     try {
         const id = req.params.id
         const blogPost = await Blog.findById(id)
-        res.json(blogPost)
+        const blogComments = await Comment.find({ blogId: id }).populate('createdBy')
+        res.json({ "blogPost": blogPost, "comments": blogComments })
     } catch (err) {
         res.status(400).send('Server Error')
     }
